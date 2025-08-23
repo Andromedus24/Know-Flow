@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from pydantic_core import from_json
+import logging
 
 from data.model import (
     KnowledgeGraph,
@@ -14,15 +15,29 @@ from data.model import (
 
 from dotenv import load_dotenv
 
-load_dotenv("./backend/.env")
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-fbpath = os.environ["FIRESTORE_PATH"]
-cred = credentials.Certificate(fbpath)
+# Load environment variables
+load_dotenv()
 
-app = firebase_admin.initialize_app(cred)
+# Initialize Firebase only if not already initialized
+if not firebase_admin._apps:
+    # Use environment variable for Firebase credentials path
+    fbpath = os.getenv("FIRESTORE_PATH")
+    if not fbpath:
+        raise ValueError("FIRESTORE_PATH environment variable not set")
+    
+    try:
+        cred = credentials.Certificate(fbpath)
+        firebase_admin.initialize_app(cred)
+        logger.info("Firebase initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize Firebase: {e}")
+        raise
 
 db = firestore.client()
-
 users_ref = db.collection("users")
 
 
@@ -77,7 +92,7 @@ def write_lesson_plan(userId, lesson_plan):
         lessons_ref.document(lesson["lesson_id"]).set(
             {
                 "title": lesson["title"],
-                "objectives": lesson["title"],
+                "objectives": lesson["objectives"],
                 "content": lesson["content"],
                 "external_resources": lesson["external_resources"],
                 "order": lesson["order"],
