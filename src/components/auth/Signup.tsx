@@ -67,7 +67,7 @@ export default function Signup() {
             <Brain className="w-8 h-8 text-kn-primary" />
           </div>
           <h1 className="text-3xl font-display font-bold text-white mb-2">
-            Join Knowde
+            Join Know-Flow
           </h1>
           <p className="text-kn-secondary text-lg">
             Start your personalized learning journey

@@ -1,4 +1,4 @@
-// API Configuration for Knowde Extension
+// API Configuration for Know-Flow Extension
 // Store your API keys and settings here
 
 // Try to import API secrets, fall back to placeholder if not available
@@ -40,7 +40,7 @@ export const API_ENDPOINTS = {
 };
 
 export const SYSTEM_PROMPTS = {
-  NODI_CHAT: `You are Nodi, a friendly and knowledgeable AI learning assistant integrated into the Knowde browser extension. You help users with:
+  NODI_CHAT: `You are Nodi, a friendly and knowledgeable AI learning assistant integrated into the Know-Flow browser extension. You help users with:
 
 1. **Learning Questions**: Answer questions about any topic the user is studying
 2. **Study Guidance**: Provide study tips, learning strategies, and motivation

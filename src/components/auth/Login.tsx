@@ -37,7 +37,7 @@ export default function Login() {
             <Brain className="w-8 h-8 text-kn-primary" />
           </div>
           <h1 className="text-3xl font-display font-bold text-white mb-2">
-            Welcome to Knowde
+            Welcome to Know-Flow
           </h1>
           <p className="text-kn-secondary text-lg">
             Your AI-powered learning companion
@@ -158,7 +158,7 @@ export default function Login() {
           <div className="mt-6 pt-6 border-t border-kn-border">
             <button
               onClick={() => {
-                setEmail("demo@knowde.com");
+                setEmail("demo@know-flow.com");
                 setPassword("demo123");
               }}
               className="w-full btn-secondary text-sm"

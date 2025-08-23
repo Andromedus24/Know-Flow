@@ -1,4 +1,4 @@
-# Knowde Extension Setup
+# Know-Flow Extension Setup
 
 ## API Configuration
 

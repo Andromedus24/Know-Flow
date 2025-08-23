@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Knowde",
+  "name": "Know-Flow",
   "version": "1.0.0",
   "description": "Personalized learning coach that transforms browsing into structured learning",
 
@@ -17,7 +17,7 @@
 
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Knowde Learning Coach",
+    "default_title": "Know-Flow Learning Coach",
     "default_icon": {
       "16": "icons/icon16.svg",
       "32": "icons/icon32.svg",
@@ -51,7 +51,7 @@
       "suggested_key": {
         "default": "Alt+K"
       },
-      "description": "Toggle Knowde learning mode"
+      "description": "Toggle Know-Flow learning mode"
     }
   },
 

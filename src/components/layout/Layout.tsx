@@ -62,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
             <div>
               <h1 className="text-xl font-display font-bold text-kn-text">
-                Knowde
+                Know-Flow
               </h1>
               <div className="flex items-center gap-1 text-xs text-kn-text-secondary">
                 <Crown className="w-3 h-3" />

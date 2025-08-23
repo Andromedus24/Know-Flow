@@ -1,4 +1,4 @@
-// Content script for Knowde extension
+// Content script for Know-Flow extension
 // Analyzes page content and provides learning opportunities
 
 interface PageData {
@@ -8,7 +8,7 @@ interface PageData {
   timestamp: number;
 }
 
-class KnowdeContentAnalyzer {
+class KnowFlowContentAnalyzer {
   private isActive: boolean = false;
   private highlightColor: string = "#404BD9";
 
@@ -164,7 +164,7 @@ class KnowdeContentAnalyzer {
     highlight.style.padding = "2px 4px";
     highlight.style.borderRadius = "3px";
     highlight.style.fontWeight = "bold";
-    highlight.className = "knowde-highlight";
+            highlight.className = "know-flow-highlight";
 
     try {
       range.surroundContents(highlight);
@@ -187,7 +187,7 @@ class KnowdeContentAnalyzer {
   private activateLearningMode() {
     // Add visual indicator that learning mode is active
     const indicator = document.createElement("div");
-    indicator.id = "knowde-learning-indicator";
+            indicator.id = "know-flow-learning-indicator";
     indicator.innerHTML = `
       <div style="
         position: fixed;
@@ -214,7 +214,7 @@ class KnowdeContentAnalyzer {
   }
 
   private deactivateLearningMode() {
-    const indicator = document.getElementById("knowde-learning-indicator");
+          const indicator = document.getElementById("know-flow-learning-indicator");
     if (indicator) {
       indicator.remove();
     }
@@ -235,13 +235,13 @@ class KnowdeContentAnalyzer {
 
   private showQuickActionTooltip(text: string) {
     // Remove existing tooltip
-    const existingTooltip = document.getElementById("knowde-tooltip");
+          const existingTooltip = document.getElementById("know-flow-tooltip");
     if (existingTooltip) {
       existingTooltip.remove();
     }
 
     const tooltip = document.createElement("div");
-    tooltip.id = "knowde-tooltip";
+          tooltip.id = "know-flow-tooltip";
     tooltip.innerHTML = `
       <div style="
         position: absolute;
@@ -254,7 +254,7 @@ class KnowdeContentAnalyzer {
         font-family: 'Inter', sans-serif;
         font-size: 12px;
       ">
-        <button id="knowde-learn-more" style="
+        <button id="know-flow-learn-more" style="
           background: #404BD9;
           color: white;
           border: none;
@@ -281,7 +281,7 @@ class KnowdeContentAnalyzer {
     document.body.appendChild(tooltip);
 
     // Add click handler
-    const learnButton = document.getElementById("knowde-learn-more");
+          const learnButton = document.getElementById("know-flow-learn-more");
     if (learnButton) {
       learnButton.addEventListener("click", () => {
         this.captureSelection();
@@ -311,7 +311,7 @@ class KnowdeContentAnalyzer {
 }
 
 // Initialize the content analyzer
-const knowdeAnalyzer = new KnowdeContentAnalyzer();
+const knowFlowAnalyzer = new KnowFlowContentAnalyzer();
 
 // Export for potential use
-(window as any).knowdeAnalyzer = knowdeAnalyzer;
+(window as any).knowFlowAnalyzer = knowFlowAnalyzer;

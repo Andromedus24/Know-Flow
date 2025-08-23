@@ -422,7 +422,7 @@ const Popup: React.FC = () => {
             <Brain className="w-5 h-5 text-white" />
           </div>
           <h1 className="font-space-grotesk font-bold text-lg text-kn-ink">
-            Knowde
+            Know-Flow
           </h1>
         </div>
         <div className="flex items-center gap-2">

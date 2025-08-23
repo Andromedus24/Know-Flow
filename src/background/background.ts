@@ -1,4 +1,4 @@
-// Background script for Knowde extension
+// Background script for Know-Flow extension
 // Handles communication between popup, content script, and external APIs
 
 interface LearningRequest {
@@ -22,7 +22,7 @@ interface LearningResponse {
 
 // Initialize extension
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("Knowde extension installed");
+      console.log("Know-Flow extension installed");
 
   // Set default values
   chrome.storage.local.set({
