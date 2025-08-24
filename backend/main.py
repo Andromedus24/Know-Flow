@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.security import HTTPBearer
+from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import os
 import json
@@ -11,6 +12,11 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 import uuid
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables first
 load_dotenv()
@@ -23,10 +29,10 @@ required_env_vars = [
     'OPENAI_API_KEY'
 ]
 
-for key in required_env_vars:
-    if not os.getenv(key):
-        print(f"Missing environment variable {key}. Please add it to .env")
-        exit(1)
+missing_vars = [key for key in required_env_vars if not os.getenv(key)]
+if missing_vars:
+    logger.error(f"Missing environment variables: {missing_vars}")
+    exit(1)
 
 # Initialize Firebase Admin SDK
 service_account_info = {
@@ -41,13 +47,22 @@ service_account_info = {
 }
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate(service_account_info)
-    firebase_admin.initialize_app(cred)
+    try:
+        cred = credentials.Certificate(service_account_info)
+        firebase_admin.initialize_app(cred)
+        logger.info("Firebase initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize Firebase: {e}")
+        exit(1)
 
 db = firestore.client()
 
 # Initialize FastAPI app
-app = FastAPI(title="Lesson Planner API", version="1.0.0")
+app = FastAPI(
+    title="Know-Flow Learning API", 
+    version="1.0.0",
+    description="AI-powered learning management system API"
+)
 
 # Enable CORS
 app.add_middleware(
@@ -58,29 +73,68 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic models
+# Security
+security = HTTPBearer()
+
+# Pydantic models with better validation
 class UserPromptRequest(BaseModel):
-    userId: str
-    prompt: str
+    userId: str = Field(..., min_length=1, description="User identifier")
+    prompt: str = Field(..., min_length=1, description="Learning prompt or question")
 
 class UserPromptGetResponse(BaseModel):
     userId: str
     lessons: List[Dict[str, Any]]
+    success: bool = True
+    message: str = "Success"
 
 class UserPromptPostResponse(BaseModel):
     success: bool
     message: str
     userId: str
     prompt: str
+    planId: Optional[str] = None
+
+class ErrorResponse(BaseModel):
+    success: bool = False
+    error: str
+    details: Optional[str] = None
+
+# Dependency for Firebase client
+def get_firestore_client():
+    return db
 
 # Routes
-@app.get("/")
+@app.get("/", tags=["Health"])
 async def root():
-    return {"message": "Lesson Planner API is running"}
+    """Health check endpoint"""
+    return {
+        "message": "Know-Flow Learning API is running",
+        "version": "1.0.0",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """Detailed health check"""
+    try:
+        # Test Firebase connection
+        db.collection("health").document("test").get()
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        raise HTTPException(status_code=503, detail="Service unhealthy")
 
 # GET ENDPOINT - Get prompt from user and call POST
-@app.get("/api/user-prompt")
-async def get_user_prompt(userId: str, prompt: str):
+@app.get("/api/user-prompt", response_model=UserPromptGetResponse, tags=["Learning"])
+async def get_user_prompt(
+    userId: str, 
+    prompt: str,
+    db_client: firestore.Client = Depends(get_firestore_client)
+):
     """Get prompt from user and forward it to the POST endpoint"""
     
     if not userId:
@@ -90,57 +144,95 @@ async def get_user_prompt(userId: str, prompt: str):
         raise HTTPException(status_code=400, detail="Missing prompt")
     
     try:
-        print(f"GET received - User: {userId}, Prompt: {prompt}")
+        logger.info(f"GET received - User: {userId}, Prompt: {prompt}")
         
         # Create request object for POST endpoint
         request_data = UserPromptRequest(userId=userId, prompt=prompt)
         
         # Call the POST endpoint internally
-        post_response = await post_user_prompt(request_data)
+        post_response = await post_user_prompt(request_data, db_client)
         
-        print(f"POST response: {post_response}")
+        logger.info(f"POST response: {post_response}")
         return post_response
         
     except Exception as e:
-        print(f"Error in GET /api/user-prompt: {e}")
+        logger.error(f"Error in GET /api/user-prompt: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # POST ENDPOINT - Receive prompt from partners
-@app.post("/api/user-prompt", response_model=UserPromptPostResponse)
-async def post_user_prompt(request: UserPromptRequest):
-    """Receive prompt from frontend partners"""
-    
-    if not request.userId:
-        raise HTTPException(status_code=400, detail="Missing userId")
-    
-    if not request.prompt:
-        raise HTTPException(status_code=400, detail="Missing prompt")
+@app.post("/api/user-prompt", response_model=UserPromptPostResponse, tags=["Learning"])
+async def post_user_prompt(
+    request: UserPromptRequest,
+    db_client: firestore.Client = Depends(get_firestore_client)
+):
+    """Receive prompt from frontend partners and generate learning content"""
     
     try:
-        print(f"Received prompt from user {request.userId}: {request.prompt}")
+        logger.info(f"Received prompt from user {request.userId}: {request.prompt}")
         
-        # Store the prompt locally (in memory for this request)
-        local_data = {
+        # Store the prompt in Firestore
+        prompt_data = {
             "userId": request.userId,
             "prompt": request.prompt,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
+            "status": "processing"
         }
         
-        # Process the prompt here or forward it somewhere else
+        # Generate a unique plan ID
+        plan_id = str(uuid.uuid4())
+        prompt_data["planId"] = plan_id
+        
+        # Store in Firestore
+        user_ref = db_client.collection("users").document(request.userId)
+        prompt_ref = user_ref.collection("prompts").document(plan_id)
+        prompt_ref.set(prompt_data)
+        
+        # TODO: Integrate with content generation system
         # For now, just acknowledge receipt
+        
+        logger.info(f"Successfully processed prompt for user {request.userId}")
         
         return UserPromptPostResponse(
             success=True,
-            message="Prompt received successfully",
+            message="Prompt received and processing started",
             userId=request.userId,
-            prompt=request.prompt
+            prompt=request.prompt,
+            planId=plan_id
         )
         
     except Exception as e:
-        print(f"Error in POST /api/user-prompt: {e}")
+        logger.error(f"Error in POST /api/user-prompt: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/user/{userId}/plans", tags=["Learning"])
+async def get_user_plans(
+    userId: str,
+    db_client: firestore.Client = Depends(get_firestore_client)
+):
+    """Get all learning plans for a user"""
+    try:
+        user_ref = db_client.collection("users").document(userId)
+        plans_ref = user_ref.collection("lessonPlans")
+        plans = []
+        
+        for doc in plans_ref.stream():
+            plan_data = doc.to_dict()
+            plan_data["planId"] = doc.id
+            plans.append(plan_data)
+        
+        return {
+            "success": True,
+            "userId": userId,
+            "plans": plans,
+            "count": len(plans)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting plans for user {userId}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
+    logger.info(f"Starting Know-Flow API on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)

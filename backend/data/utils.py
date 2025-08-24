@@ -76,28 +76,53 @@ def get_lesson_plan(userId, planId):
 
 
 def write_lesson_plan(userId, lesson_plan):
-    userdb = db.collection("users").document(lesson_plan["user_id"])
-    lessonplan_ref = userdb.collection("lessonPlans").document(lesson_plan["plan_id"])
-    lessonplan_ref.set(
-        {
-            "description": lesson_plan["description"],
-            "created_at": lesson_plan["created_at"],
-            "last_accessed": lesson_plan["last_accessed"],
-            "status": lesson_plan["status"],
-            "source_prompt": lesson_plan["source_prompt"],
-        }
-    )
-    lessons_ref = lessonplan_ref.collection("lessons")
-    for lesson in lesson_plan["lessons"]:
-        lessons_ref.document(lesson["lesson_id"]).set(
+    try:
+        if not userId or not lesson_plan:
+            raise ValueError("userId and lesson_plan are required")
+        
+        userdb = db.collection("users").document(userId)
+        lessonplan_ref = userdb.collection("lessonPlans").document(lesson_plan["plan_id"])
+        
+        # Validate required fields
+        required_fields = ["description", "created_at", "last_accessed", "status", "source_prompt", "lessons"]
+        for field in required_fields:
+            if field not in lesson_plan:
+                raise ValueError(f"Missing required field: {field}")
+        
+        # Write lesson plan metadata
+        lessonplan_ref.set(
             {
-                "title": lesson["title"],
-                "objectives": lesson["objectives"],
-                "content": lesson["content"],
-                "external_resources": lesson["external_resources"],
-                "order": lesson["order"],
+                "description": lesson_plan["description"],
+                "created_at": lesson_plan["created_at"],
+                "last_accessed": lesson_plan["last_accessed"],
+                "status": lesson_plan["status"],
+                "source_prompt": lesson_plan["source_prompt"],
             }
         )
+        
+        # Write individual lessons
+        lessons_ref = lessonplan_ref.collection("lessons")
+        for lesson in lesson_plan["lessons"]:
+            if not lesson.get("lesson_id"):
+                logger.warning(f"Skipping lesson without lesson_id: {lesson}")
+                continue
+                
+            lessons_ref.document(lesson["lesson_id"]).set(
+                {
+                    "title": lesson["title"],
+                    "objectives": lesson["objectives"],
+                    "content": lesson["content"],
+                    "external_resources": lesson["external_resources"],
+                    "order": lesson["order"],
+                }
+            )
+        
+        logger.info(f"Successfully wrote lesson plan {lesson_plan['plan_id']} for user {userId}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to write lesson plan for user {userId}: {e}")
+        raise
 
 
 # def write_lesson_plan(userId, lesson_plan: LessonPlan):

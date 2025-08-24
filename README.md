@@ -1,70 +1,181 @@
-# Getting Started with Create React App
+# Know-Flow: AI-Powered Learning Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Know-Flow is an intelligent learning management system that uses AI agents to create personalized learning plans, generate knowledge graphs, and adapt to individual learning styles.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **AI-Powered Content Generation**: Multi-agent system for creating comprehensive learning plans
+- **Knowledge Graph Generation**: Visual representation of learning concepts and relationships
+- **Personalized Learning**: Adapts to user preferences and learning pace
+- **Real-time Progress Tracking**: Monitor learning progress and achievements
+- **Modern Web Interface**: React-based frontend with responsive design
+- **Scalable Backend**: FastAPI backend with Firebase integration
 
-### `npm start`
+## 🏗️ Architecture
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend (React + TypeScript)
+- Modern React 19 with TypeScript
+- Tailwind CSS for styling
+- React Router for navigation
+- Firebase authentication
+- Responsive design for all devices
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend (Python + FastAPI)
+- FastAPI for high-performance API
+- Multi-agent AI system using Agno framework
+- Firebase Firestore for data storage
+- OpenAI and Anthropic integration
+- Comprehensive error handling and logging
 
-### `npm test`
+### AI Agents
+- **Content Generator**: Creates learning plans and materials
+- **Researcher**: Finds relevant external resources
+- **Knowledge Graph Generator**: Builds concept relationships
+- **Learning Orchestrator**: Coordinates all agents
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Setup & Installation
 
-### `npm run build`
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- Firebase project
+- OpenAI API key
+- Anthropic API key (optional)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-### `npm run eject`
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Create environment file:
+```bash
+cp .env.example .env
+# Edit .env with your API keys and Firebase configuration
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. Start the backend:
+```bash
+python start.py
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Frontend Setup
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Install dependencies:
+```bash
+npm install
+```
 
-## Learn More
+2. Start development server:
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Docker Setup
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Build and run with Docker Compose:
+```bash
+docker-compose up --build
+```
 
-### Code Splitting
+## 🔧 Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Environment Variables
 
-### Analyzing the Bundle Size
+Create a `.env` file in the backend directory:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```env
+# Firebase Configuration
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=your-service-account-email
+FIREBASE_PRIVATE_KEY=your-private-key
 
-### Making a Progressive Web App
+# API Keys
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+# Server Configuration
+PORT=8000
+HOST=0.0.0.0
+DEBUG=false
+```
 
-### Advanced Configuration
+## 📚 API Documentation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Once the backend is running, visit:
+- **API Docs**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
 
-### Deployment
+### Key Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- `GET /api/user-prompt` - Generate learning plan from prompt
+- `POST /api/user-prompt` - Submit learning prompt
+- `GET /api/user/{userId}/plans` - Get user's learning plans
 
-### `npm run build` fails to minify
+## 🧪 Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Backend Tests
+```bash
+cd backend
+python -m pytest
+```
+
+### Frontend Tests
+```bash
+npm test
+```
+
+## 🚀 Deployment
+
+### Backend Deployment
+```bash
+cd backend
+docker build -t know-flow-backend .
+docker run -p 8000:8000 know-flow-backend
+```
+
+### Frontend Deployment
+```bash
+npm run build
+# Deploy the build folder to your hosting service
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the documentation
+- Review the configuration examples
+
+## 🔄 Changelog
+
+### v1.0.0
+- Initial release with AI-powered learning system
+- Multi-agent content generation
+- Knowledge graph visualization
+- Modern React frontend
+- FastAPI backend with Firebase integration
