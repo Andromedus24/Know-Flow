@@ -53,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const mockUser = {
       id: "1",
       email,
-      name: "Hyun Kim",
+      name: "Ronak Prabhu",
       createdAt: new Date(),
       lastLoginAt: new Date(),
       streak: 7,
