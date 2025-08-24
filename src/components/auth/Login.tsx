@@ -211,7 +211,7 @@ export default function Login() {
           <div className="mt-6 pt-6 border-t border-kn-border">
             <button
               onClick={() => {
-                setEmail("demo@know-flow.com");
+                setEmail("demo@example.com");
                 setPassword("demo123");
               }}
               className="w-full btn-secondary text-sm"

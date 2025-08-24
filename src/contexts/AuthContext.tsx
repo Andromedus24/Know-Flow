@@ -53,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const mockUser = {
       id: "1",
       email,
-      name: "Ronak Prabhu",
+      name: email.split('@')[0], // Use email prefix as name for demo
       createdAt: new Date(),
       lastLoginAt: new Date(),
       streak: 7,
