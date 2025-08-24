@@ -382,9 +382,9 @@ if __name__ == "__main__":
     # Create a sample user profile with validation
     try:
         profile = create_user_profile(
-            uid="firebase_auth_uid_123",
-            email="user@example.com",
-            display_name="John Doe",
+            uid="ronak_user_001",
+            email="ronak@example.com",
+            display_name="Ronak Prabhu",
         )
         print("✓ User profile created successfully")
     except Exception as e:
@@ -431,7 +431,7 @@ if __name__ == "__main__":
     try:
         user_artifact = UserArtifact(
             app_id="my_learning_app",
-            user_id="user_123",
+            user_id="ronak_user_001",
             user_profile=profile,
             lesson_plans=[lesson_plan],
         )

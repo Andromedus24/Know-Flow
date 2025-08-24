@@ -102,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
                 {userData?.name || "User"}
               </p>
               <p className="text-xs text-kn-text-secondary truncate">
-                {userData?.email || "user@example.com"}
+                {userData?.email || "ronak@example.com"}
               </p>
             </div>
           </div>
