@@ -129,7 +129,7 @@ The Know-Flow system is now ready for production deployment with:
 - Multiple deployment options
 - Comprehensive error handling
 - Health monitoring
-- Docker support
+- Docker support 
 - Automated deployment scripts
 
 ## 📞 Support & Next Steps
