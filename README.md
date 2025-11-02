@@ -14,7 +14,7 @@ Know-Flow transforms passive learning into **active, intelligent knowledge acqui
 - **Analyzes** your learning context in real-time with AI-powered intelligence
 - **Adapts** content delivery based on your cognitive patterns and preferences
 - **Predicts** knowledge gaps before they become obstacles using machine learning
-- **Optimizes** your learning journey for maximum retention and application
+- **Optimizes** your learning journey for maximum retention and application 
 
 ---
 
